@@ -55,7 +55,7 @@ ssh node1 "mkdir ~/datanode"
 
 #do this on master node only
 vi ~/etc/hadoop/hdfs-site.xml
-+# add into <configuration> - </configuration> section
+# add into <configuration> - </configuration> section
 <configuration>
   <property>
     <name>dfs.replication</name>
