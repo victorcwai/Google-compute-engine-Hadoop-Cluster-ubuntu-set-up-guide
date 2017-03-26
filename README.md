@@ -143,7 +143,14 @@ hadoop jar ~/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.1.jar wordcoun
 hdfs dfs -ls /output01 
 hdfs dfs -cat /output01/part-r-00000 
 ```
+To start/stop Hadoop:
+```
+start-dfs.sh
+stop-dfs.sh 
 
+start-yarn.sh
+stop-yarn.sh
+```
 Change permission of folders to hadoop if scp says permission denied.
 
 # Reference
