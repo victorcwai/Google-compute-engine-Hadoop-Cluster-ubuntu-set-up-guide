@@ -16,24 +16,6 @@ sudo chown hadoop:hadoop /usr/hadoop
 echo "hadoop:hadoop" | sudo chpasswd
 
 #do this on all nodes, while login as hadoop
-#download and install hadoop
-curl -O http://ftp.jaist.ac.jp/pub/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz 
-sudo tar zxvf hadoop-2.7.1.tar.gz -C /usr/hadoop --strip-components 1
-
-echo "# add follows to the end
-export HADOOP_HOME=/usr/hadoop
-export HADOOP_COMMON_HOME=$HADOOP_HOME
-export HADOOP_HDFS_HOME=$HADOOP_HOME
-export HADOOP_MAPRED_HOME=$HADOOP_HOME
-export HADOOP_YARN_HOME=$HADOOP_HOME
-export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
-export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
-export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
-" >> /usr/hadoop/.bash_profile
-source /usr/hadoop/.bash_profile 
-#logout of hadoop
-
-#do this on all nodes
 sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
 sudo service sshd restart
 
@@ -48,6 +30,23 @@ ssh-copy-id node1
 #do this to all nodes, change PasswordAuthentication back to no
 sudo sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/g' /etc/ssh/sshd_config
 sudo service sshd restart
+
+#download and install hadoop, while login as hadoop
+curl -O http://ftp.jaist.ac.jp/pub/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz 
+tar zxvf hadoop-2.7.1.tar.gz -C /usr/hadoop --strip-components 1
+
+vi /usr/hadoop/.bash_profile
+#add follows to the end
+export HADOOP_HOME=/usr/hadoop
+export HADOOP_COMMON_HOME=$HADOOP_HOME
+export HADOOP_HDFS_HOME=$HADOOP_HOME
+export HADOOP_MAPRED_HOME=$HADOOP_HOME
+export HADOOP_YARN_HOME=$HADOOP_HOME
+export HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib/native"
+export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+
+source /usr/hadoop/.bash_profile 
 
 #do this on master node, then ssh to ALL nodes
 mkdir ~/datanode 
@@ -81,8 +80,8 @@ vi ~/etc/hadoop/core-site.xml
 # send to all slaves
 scp ~/etc/hadoop/core-site.xml node1:~/etc/hadoop/ 
 
-#NEED TO CHANGE JAVA PATH HERE, I forgot how#
-sed -i -e 's/\${JAVA_HOME}/\/usr\/java\/default/' ~/etc/hadoop/hadoop-env.sh 
+#NEED TO CHANGE JAVA PATH in ~/etc/hadoop/hadoop-env.sh#
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 # send to all slaves
 scp ~/etc/hadoop/hadoop-env.sh node1:~/etc/hadoop/ 
 
@@ -134,6 +133,7 @@ start-dfs.sh
 start-yarn.sh
 #check if running propoerly
 jps 
+hdfs dfsadmin -report
 
 #execute a sample program 
 hdfs dfs -mkdir /test
