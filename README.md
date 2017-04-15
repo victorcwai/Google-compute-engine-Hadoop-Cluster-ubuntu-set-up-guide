@@ -53,6 +53,7 @@ mkdir ~/datanode
 ssh node1 "mkdir ~/datanode" 
 
 #do this on master node only
+mkdir ~/namenode
 vi ~/etc/hadoop/hdfs-site.xml
 # add into <configuration> - </configuration> section
 <configuration>
@@ -63,6 +64,10 @@ vi ~/etc/hadoop/hdfs-site.xml
   <property>
     <name>dfs.datanode.data.dir</name>
     <value>file:///usr/hadoop/datanode</value>
+  </property>
+  <property>
+    <name>dfs.namenode.name.dir</name>
+    <value>file:///usr/hadoop/namenode</value>
   </property>
 </configuration>
 #send to all slaves
@@ -84,17 +89,6 @@ scp ~/etc/hadoop/core-site.xml node1:~/etc/hadoop/
 export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 # send to all slaves
 scp ~/etc/hadoop/hadoop-env.sh node1:~/etc/hadoop/ 
-
-mkdir ~/namenode 
-
-vi ~/etc/hadoop/hdfs-site.xml
-# add into <configuration> - </configuration> section
-<configuration>
-  <property>
-    <name>dfs.namenode.name.dir</name>
-    <value>file:///usr/hadoop/namenode</value>
-  </property>
-</configuration>
 
 vi ~/etc/hadoop/mapred-site.xml
 # create new
@@ -123,8 +117,7 @@ vi ~/etc/hadoop/yarn-site.xml
 </configuration>
 
 vi ~/etc/hadoop/slaves
-# add all nodes (remove localhost)
-dlp.srv.world
+# add all slave nodes (remove localhost)
 node1
 
 #finally, boot the cluster
